@@ -1,0 +1,103 @@
+#include<Servo.h>
+Servo servo1;
+int trick = 2,eco = 3;
+int ena = 10;
+int enb = 11;
+int au = 4,ad = 5,bu = 6,bd= 7;
+double dur,cm,cm1;
+void setup() {
+  pinMode(eco,INPUT);
+  pinMode(trick,OUTPUT);
+  servo1.attach(9);
+  Serial.begin(9600);
+
+  // put your setup code here, to run once:
+pinMode(ena,OUTPUT);
+pinMode(enb,OUTPUT);
+pinMode(au,OUTPUT);
+pinMode(ad,OUTPUT);
+pinMode(bu,OUTPUT);
+pinMode(bd,OUTPUT);
+pinMode(eco, INPUT);
+pinMode(trick,OUTPUT);
+
+analogWrite(ena,175);
+analogWrite(enb,175);
+
+}
+
+double checkDis(){
+  digitalWrite(trick,LOW);
+  delayMicroseconds(10);
+  digitalWrite(trick,HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trick,LOW);
+  dur = pulseIn(eco,HIGH);
+  cm = dur*0.0347/2;
+  return cm;
+}
+
+
+void froward(){
+  digitalWrite(au, HIGH);
+  digitalWrite(ad,LOW);
+  digitalWrite(bu, HIGH);
+  digitalWrite(bd,LOW);
+}
+void rightTurn(){
+  digitalWrite(au, HIGH);
+  digitalWrite(ad,LOW);
+  digitalWrite(bu, LOW);
+  digitalWrite(bd,LOW);
+}
+
+void leftTurn(){
+  digitalWrite(au, LOW);
+  digitalWrite(ad,LOW);
+  digitalWrite(bu, HIGH);
+  digitalWrite(bd,LOW);
+}
+void back(){
+  digitalWrite(au, LOW);
+  digitalWrite(ad,HIGH);
+  digitalWrite(bu, LOW);
+  digitalWrite(bd,HIGH);
+}
+void loop() {
+  // put your main code here, to run repeatedly:
+  cm1 = checkDis();
+  Serial.println(cm1);
+  if(cm1 > 50){
+      froward();
+      delay(250);
+  }
+  else{
+    double ld,rd,fd;
+    servo1.write(0);
+      rd = checkDis();
+    servo1.write(78);
+      fd = checkDis();
+    servo1.write(160);
+      ld = checkDis();
+    if(rd>ld && rd >fd && rd >35){
+     rightTurn();
+      delay(400);
+    }
+    
+    else if(ld >rd && ld>fd && ld >35){
+      leftTurn();
+      delay(410);
+    }
+    else if(fd>50){
+      froward();
+      delay(100);
+    }
+    else {
+      back();
+      delay(100);
+    }
+  }
+
+  
+
+}
